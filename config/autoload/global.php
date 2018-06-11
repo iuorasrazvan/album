@@ -11,7 +11,77 @@
  * file.
  */
  
-return []; 
+
+
+use Album\Model\UserService1;
+use Album\Model\UserService2;
+use Album\Model\UserService3;
+use Album\Model\UserService4;  
+use Zend\Session;   
+
+
+use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+ 
+
+
+  return  [
+	
+	'db' => [
+        'driver' => 'Pdo',
+        'dsn'    =>'mysql:dbname=zftutorial;host=127.0.0.1',
+		'user'=>'root',
+		'pass'=>''
+    ],
+	
+	 ConfigAbstractFactory::class => [
+        UserService3::class => [
+			UserService1::class,
+			UserService2::class,
+			
+		
+		
+		],
+		
+		UserService4::class=>[]
+		
+		
+ 
+            
+    ],
+	'session_config'=>[
+		'cookie_http_only'=>true, 
+	],  
+	
+	'session_storage'=>[
+		'type'=>\Zend\Session\Storage\SessionArrayStorage::class
+	], 
+	
+	
+	 'session_manager' => [
+		 'config' => [
+			'class' => Session\Config\SessionConfig::class,
+			'options' => [
+				'name' => 'database',
+				'phpSaveHandler'=>'files', 
+				'savePath'=>'C:/xampp/htdocs/zft/data/session', 
+			],
+		],
+		'storage' => Session\Storage\SessionArrayStorage::class,
+		'validators' => [
+			Session\Validator\RemoteAddr::class,
+			Session\Validator\HttpUserAgent::class,
+		],
+	],
+
+	
+	'view'=>[
+		'base_title'=>'La porumb', 
+	
+	]
+
+	
+]; 
+
 
 
 

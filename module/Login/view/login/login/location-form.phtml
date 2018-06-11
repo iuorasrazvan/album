@@ -1,0 +1,22 @@
+<?php  
+$form = $this->form;
+$form->prepare();
+
+
+// Assuming the "contact/process" route exists...
+$form->setAttribute('action', $this->url('location-form'));
+
+// Set the method attribute for the form
+$form->setAttribute('method', 'post');
+
+// Get the form label plugin
+
+// Render the opening tag
+
+echo $this->form()->openTag ();
+
+echo $this->formCollection ($form);  
+
+echo $this->form()->closeTag ();  
+?>
+

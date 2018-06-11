@@ -1,0 +1,154 @@
+<?php
+
+namespace Login;
+
+
+use Zend\Stdlib\RequestInterface as Request;  
+use Zend\Router\Http\Literal;
+use Zend\Router\Http\Part;  
+use Zend\Router\Http\Regex; 
+use Zend\Router\Http\Scheme; 
+use Zend\Router\Http\Segment;   
+use Zend\Router\Http\Hostname; 
+use Zend\Router\Http\Method;  
+ 
+use Login\Controller\HelloController;
+ 
+
+use Zend\Router\RoutePluginManager;
+
+
+return [
+  
+    'router' => [
+        'routes' => [
+            'contact-form' => [
+                'type'    => Literal::class,
+                'options' => [
+                    // Change this to something specific to your module
+                    'route'    => '/controller/action',
+                    'defaults' => [
+                        'controller'    => 'login',
+                        'action'        => 'contactForm',
+						
+                    ],
+                ],
+                'may_terminate' => true,
+                				
+               
+            ],
+			
+			
+			'login-form' => [
+                'type'    => Literal::class,
+                'options' => [
+                    // Change this to something specific to your module
+                    'route'    => '/',
+                    'defaults' => [
+                        'controller'    => 'login',
+                        'action'        => 'loginForm',
+						
+                    ],
+                ],
+                'may_terminate' => true,
+                
+					
+					
+					
+               
+            ],
+			
+			
+			
+			'location-form' => [
+                'type'    => Literal::class,
+                'options' => [
+                    // Change this to something specific to your module
+                    'route'    => '/controller/action',
+                    'defaults' => [
+                        'controller'    => 'login',
+                        'action'        => 'locationForm',
+						
+                    ],
+                ],
+                'may_terminate' => true,
+                
+									
+               
+            ],
+			
+			'product-form' => [
+                'type'    => Literal::class,
+                'options' => [
+                    // Change this to something specific to your module
+                    'route'    => '/controller/action',
+                    'defaults' => [
+                        'controller'    =>'product',
+                        'action'        => 'upload',
+						
+                    ],
+                ],
+                'may_terminate' => true,
+                
+					
+					
+					
+               
+            ],
+			
+			'register-form'=>[
+			
+				'type'=> Literal::class, 
+				'options'=> [
+					'route'=>'/controller/action', 
+					'defaults'=>[
+						'controller'=>'login', 
+						'action'=>'registerForm', 
+					
+					
+					]
+				
+				
+				]
+			
+			
+			],
+			
+			
+			
+			'logout-route'=>[
+			
+				'type'=> Literal::class, 
+				'options'=> [
+					'route'=>'/logout/route', 
+					'defaults'=>[
+						'controller'=>'login', 
+						'action'=>'logoutRoute', 
+					
+					
+					]
+				
+				
+				]
+			
+			
+			]
+			
+		], 
+			
+			
+    ],
+   
+    'view_manager' => [
+        'template_path_stack' => [
+            'login' => __DIR__ . '/../view',
+        ],
+    ],
+	
+	
+	
+	
+	
+	
+	
+];

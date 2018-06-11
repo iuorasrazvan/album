@@ -1,0 +1,70 @@
+<?php  
+$form = $this->form;
+$form->prepare();
+
+
+// Assuming the "contact/process" route exists...
+$form->setAttribute('action', $this->url('contact-form'));
+
+// Set the method attribute for the form
+$form->setAttribute('method', 'post');
+
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+
+// Render the opening tag
+
+echo $this->form()->openTag($form); 
+?>
+
+<div class="form_element">
+<?php 
+   
+    $name = $form->get('name');
+    echo $formLabel->openTag() . $name->getOption('label');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+    echo $formLabel->closeTag();
+?></div>
+
+
+
+<div class="form_element">
+<?php
+    $subject = $form->get('subject');
+    echo $formLabel->openTag() . $subject->getOption('label');
+    echo $this->formInput($subject);
+    echo $this->formElementErrors($subject);
+    echo $formLabel->closeTag();
+?></div>
+
+<div class="form_element">
+<?php
+    $message = $form->get('message');
+    echo $formLabel->openTag() . $message->getOption('label');
+    echo $this->formTextarea($message);
+    echo $this->formElementErrors($message);
+    echo $formLabel->closeTag();
+?></div>
+
+
+
+<div class="form_element">
+<?php
+    $dtl = $form->get('studyEl');
+    echo $formLabel->openTag().$dtl->getOption('label'); 
+   
+    echo $this->FormTime ($dtl);
+	echo $this->formElementErrors($dtl);
+	
+	echo $formLabel->closeTag(); 
+  
+    
+?></div>
+
+<?=	 $this->formRow($form->get('csrf')); ?> 
+
+
+<?= $this->formElement($form->get('send')) ?>
+
+<?= $this->form()->closeTag() ?>

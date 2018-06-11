@@ -1,0 +1,65 @@
+<?php 
+
+$form=$this->form;
+
+$form->prepare ();  
+
+$form->setAttribute ('action', $this->url('register-form'));
+
+$form->setAttribute ('method', 'post');   
+
+// Get the form label plugin
+$formLabel = $this->plugin('formLabel');
+
+?>
+<h2> Register on this site </h2>  
+
+<?php 
+
+echo $this->form()->openTag($form); 
+?>
+
+<div class="form_element">
+<?php 
+   
+    $name = $form->get('username');
+    echo $formLabel->openTag() . $name->getOption('label');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+    echo $formLabel->closeTag();
+?></div>
+
+<div class="form_element">
+<?php 
+   
+    $name = $form->get('password');
+    echo $formLabel->openTag() . $name->getOption('label');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+    echo $formLabel->closeTag();
+?></div>
+
+
+<div class="form_element">
+<?php 
+   
+    $name = $form->get('name');
+    echo $formLabel->openTag() . $name->getOption('label');
+    echo $this->formInput($name);
+    echo $this->formElementErrors($name);
+    echo $formLabel->closeTag();
+?></div>
+
+
+<?= $this->formElement($form->get('send')) ?>
+
+<?= $this->form()->closeTag(); ?>
+
+<?php 
+
+	$login = $this->url ('login-form');
+	echo 'or ';  
+?>
+
+
+<a href="<?php echo $login; ?>">Login</a>  

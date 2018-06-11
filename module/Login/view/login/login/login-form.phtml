@@ -1,0 +1,100 @@
+<?php  
+
+$user=$this->user;
+
+if (isset($this->user) &&!empty ($this->user))  {
+	
+	echo '<h2> welcome '.$this->escapeHtml($this->user).'</h2>';
+?>
+	<a href="<?= $this->url('album');?>">Go to albums</a>
+	
+<?php 
+}
+
+else { 
+
+
+	$form=$this->form;
+
+
+	 
+	if (isset($form)) {
+		
+		$form->prepare();
+
+
+		// Assuming the "contact/process" route exists...
+		$form->setAttribute('action', $this->url('login-form'));
+
+		// Set the method attribute for the form
+		$form->setAttribute('method', 'post');
+
+		// Get the form label plugin
+		$formLabel = $this->plugin('formLabel');
+
+		// Render the opening tag
+
+		echo $this->form()->openTag($form); 
+		?>  
+
+
+		<div class="form_element">
+		<?php 
+			$name=$form->get('username');  
+			echo $this->formRow($name);
+			
+		   // $name = $form->get('name');
+		//echo $formLabel->openTag() . $name->getOption('label');
+			//echo $this->formInput($name);
+			//echo $this->formElementErrors($name);
+			//echo $formLabel->closeTag();
+		?></div>
+
+
+
+		<div class="form_element">
+		<?php 
+			$password = $form->get('password');
+			echo $formLabel->openTag() . $password->getOption('label');
+			echo $this->formInput($password);
+			echo $this->formElementErrors($password);
+			echo $formLabel->closeTag();
+		?></div>
+
+
+
+		<?= $this->formElement($form->get('send')) ?>
+
+		<?= $this->form()->closeTag() ?>
+		
+		
+
+	<?php 
+
+			$register=$this->url('register-form'); 
+			echo '<h3>or';  
+	?>
+			<a href="<?php echo $register;?>">Register</a></h3> 
+
+
+	<?php 
+			
+			
+		}
+
+		else  { 
+
+		
+			$logout = $this->url('logout-route'); 
+		
+	?> 
+
+
+		<a href="<?php echo $logout;?>">Logout </a> 
+		
+	<?php 
+
+		}
+	}
+	
+?>  

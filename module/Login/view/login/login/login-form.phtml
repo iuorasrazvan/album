@@ -1,12 +1,30 @@
-<?php  
+<?php 
+use Zend\Permissions\Acl\Acl;  
+use Zend\Permissions\Acl\Role\GenericRole as Role; 
+use Zend\Permissions\Acl\Resource\GenericResource as Resource;   
 
-$user=$this->user;
+if (isset($this->message) && $this->message!=null)  {
+
+	echo '<h2>You have to be logged in to see the '.$this->message. '</h2>';  
+	
+}  
+
+if (isset($this->error) ) {
+
+	echo '<h2>'.$this->error. '</h2>';  
+	
+}
 
 if (isset($this->user) &&!empty ($this->user))  {
 	
-	echo '<h2> welcome '.$this->escapeHtml($this->user).'</h2>';
+	echo '<h2> welcome '.$this->escapeHtml($this->user->name).'</h2>';
+
 ?>
-	<a href="<?= $this->url('album');?>">Go to albums</a>
+	<a href="<?= $this->url('album',['id_user'=>$this->user->id_user]);?>">Go to albums</a> or
+	<a href="<?= $this->url('driver');?>">Go to drivers</a>
+	
+	
+	<h4><a href="<?= $this->url('logout-route'); ?>">Logout</a></h4>
 	
 <?php 
 }
@@ -23,7 +41,7 @@ else {
 		$form->prepare();
 
 
-		// Assuming the "contact/process" route exists...
+
 		$form->setAttribute('action', $this->url('login-form'));
 
 		// Set the method attribute for the form
@@ -98,3 +116,8 @@ else {
 	}
 	
 ?>  
+
+
+	
+	
+	

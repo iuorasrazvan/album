@@ -11,6 +11,7 @@ use Zend\Router\Http\Scheme;
 use Zend\Router\Http\Segment;   
 use Zend\Router\Http\Hostname; 
 use Zend\Router\Http\Method;  
+
  
 use Login\Controller\HelloController;
  
@@ -22,21 +23,6 @@ return [
   
     'router' => [
         'routes' => [
-            'contact-form' => [
-                'type'    => Literal::class,
-                'options' => [
-                    // Change this to something specific to your module
-                    'route'    => '/controller/action',
-                    'defaults' => [
-                        'controller'    => 'login',
-                        'action'        => 'contactForm',
-						
-                    ],
-                ],
-                'may_terminate' => true,
-                				
-               
-            ],
 			
 			
 			'login-form' => [
@@ -51,56 +37,86 @@ return [
                     ],
                 ],
                 'may_terminate' => true,
-                
+				
+			], 
 					
-					
-					
-               
-            ],
-			
-			
-			
+	
 			'location-form' => [
-                'type'    => Literal::class,
-                'options' => [
-                    // Change this to something specific to your module
-                    'route'    => '/controller/action',
-                    'defaults' => [
-                        'controller'    => 'login',
-                        'action'        => 'locationForm',
+				'type'    => Literal::class,
+				'options' => [
+					// Change this to something specific to your module
+					'route'    => '/location',
+					'defaults' => [
+						'controller'    => 'login',
+						'action'        => 'locationForm',
 						
-                    ],
-                ],
-                'may_terminate' => true,
-                
-									
-               
-            ],
+					],
+				],
+				'may_terminate' => true,
+			],
 			
+									
 			'product-form' => [
-                'type'    => Literal::class,
-                'options' => [
-                    // Change this to something specific to your module
-                    'route'    => '/controller/action',
-                    'defaults' => [
-                        'controller'    =>'product',
-                        'action'        => 'upload',
+				'type'    => Literal::class,
+				'options' => [
+					// Change this to something specific to your module
+					'route'    => '/product',
+					'defaults' => [
+						'controller'    =>'product',
+						'action'        => 'product',
 						
-                    ],
-                ],
-                'may_terminate' => true,
-                
+					],
+				],
+				'may_terminate' => true,
+			],
+				
+				
 					
+			
+			'contact-form'=> [
+				'type'=>Literal::class, 
+				'options'=> [
+					'route'    => '/contact',
+					'defaults' => [
+						'controller'    =>'login',
+						'action'        => 'contactForm',
+						
+					],
+				
+				
+				], 				
+				'may_terminate'=>true, 
 					
+			   
+			],
+			
+			'upload'=> [
+				'type'=>Literal::class, 
+				'options'=> [
+					'route'    => '/product/upload',
+					'defaults' => [
+						'controller'    =>'product',
+						'action'        => 'upload',
+						
+					],
+				
+				
+				], 				
+				'may_terminate'=>true, 
 					
-               
-            ],
+			   
+			],
+			
+				
+													
+			
+						
 			
 			'register-form'=>[
 			
 				'type'=> Literal::class, 
 				'options'=> [
-					'route'=>'/controller/action', 
+					'route'=>'/login/register', 
 					'defaults'=>[
 						'controller'=>'login', 
 						'action'=>'registerForm', 
@@ -120,7 +136,7 @@ return [
 			
 				'type'=> Literal::class, 
 				'options'=> [
-					'route'=>'/logout/route', 
+					'route'=>'/login/logout', 
 					'defaults'=>[
 						'controller'=>'login', 
 						'action'=>'logoutRoute', 

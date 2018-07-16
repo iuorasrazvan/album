@@ -14,13 +14,38 @@ use Zend\Mvc\ResponseSender\SendResponseEvent;
 use Zend\Config\Config ;  
 use Zend\Session; 
 
+use Zend\View\Renderer\PhpRenderer;
 
+use Zend\View\Resolver\TemplateMapResolver;
 
+use Zend\View\Resolver\AggregateResolver;  
 
+use Zend\View\Resolver\RelativeFallbackResolver ;   
 
 use Zend\Session\Config\SessionConfig; 
 
 
+use Zend\ServiceManager\Factory\InvokableFactory;  
+
+use Zend\EventManager\EventManager;  
+
+use Zend\View\Resolver;  
+
+use Zend\Db\Adapter\AdapterInterface;  
+
+use Zend\Db\ResultSet\ResultSet;  
+
+use Zend\Db\TableGateway\TableGateway;  ;
+
+use Zend\View\Helper\Doctype;
+
+use Database\Model\Table\TrucksTableQueries;  
+
+use Database\Model\Table\DriversTable;   
+
+use Database\Model\View\Helper\Lowercase;  
+
+use Database\Model\View\Helper\LowercaseFactory;  
 
 
 
@@ -32,10 +57,10 @@ class Module  {
     {
         return include __DIR__ . '/../config/module.config.php';
     }
+	
+	
 
-	
-	
-	
+
 	public function onBootstrap ($e)  {
 		
 		$app = $e -> getApplication ();
@@ -49,11 +74,37 @@ class Module  {
 
 		$this -> bootstrapSession ($e);  
 		
-		
-	
-		
+	   
+
 		
 	}	
+	
+	public function getViewHelperConfig () {
+		
+		return [ 
+		  'aliases' => [
+                'lowercase' => Lowercase::class,
+              
+            ],
+            'factories' => [
+                Lowercase::class => InvokableFactory::class,
+			],
+			
+		];  
+		
+		
+		
+	}
+	
+	
+
+	
+
+	
+	
+	
+	
+	
 	
 	public function bootstrapSession ($e)   {
 		
@@ -176,11 +227,59 @@ class Module  {
 					Container::setDefaultManager($sessionManager);
                     return  $sessionManager; 
 					
-				}
-		
+				},  
+				
+				TrucksTableGateway::class=>function ($container)  {
+				
+					
+					
+					$dbAdapter = $container->get(AdapterInterface::class);
+					
+                    $resultSetPrototype = new ResultSet();
+                    $resultSetPrototype->setArrayObjectPrototype(new DriversTable());
+                    return new TableGateway('drivers', $dbAdapter, null, $resultSetPrototype);
+					
+					
+				},
+				
+				
+				TrucksTableQueries::class => function ($container, $requestedName)  {
+					
+					$trucksTableGateway= $container->get (TrucksTableGateway::class);  
+					
+					return new $requestedName ($trucksTableGateway);  
+				}, 
+				
+				
+				Model\MyPluginManager::class=>function ($container, $requestedName)  {
+					return new $requestedName (
+						$container, [
+							'factories'=> [
+								Model\MyService::class=>InvokableFactory::class
+							
+							
+							
+							
+						
+							],
+							
+							'aliases'=>[
+							
+								'myService'=>Model\MyService::class, 
+							]
+					
+					
+					]);  
+					
+					
+				},  
+				
+				
 			
 			
-			]
+			], 
+			
+			
 		]; 
   
 	}	

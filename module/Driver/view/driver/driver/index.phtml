@@ -1,0 +1,64 @@
+<?php 
+  
+	$drivers=$this->drivers;
+?>
+
+<!doctype=html>
+<html>
+	<head>
+		<style>
+			table, table * {
+				border:1px solid black;  
+				padding:10px;  
+				text-align:center;  
+			}
+			
+			table a {
+				
+				border:none;  
+			}
+		
+		
+		</style>  
+	
+	
+	</head>
+	<body> 
+		<h3><a href="<?= $this->url('album'); ?>">Go to Albums</a></h3> 
+		<h3><a href="<?= $this->url('login-form') ;?>">Go to main page</a></h3> 
+		<p>
+	
+			<a href="<?= $this->url('driver', ['action' => 'add']); ?>">Add driver</a>
+		</p> 
+		<table style="border:1px solid black;">
+			<tr>
+				<th>Name</th> 
+				<th>Age</th> 
+				<th>Cat</th> 
+				<th>Edit</th> 
+				<th>Delete</th>
+			
+			</tr>
+		
+
+	<?php foreach ($drivers as $driver) : ?>
+		<tr>
+			<td><?= $this->escapeHtml($driver->name) ?></td>
+			<td><?= $this->escapeHtml($driver->age) ?></td>
+			<td><?= $this->escapeHtml($driver->category) ?></td>
+			<td>
+				<a href="<?= $this->url('driver', ['action' => 'edit', 'id' => $driver->id_driver]) ?>">Edit</a>
+			</td> 
+			<td> 
+				<a href="<?= $this->url('driver', ['action' => 'delete', 'id' => $driver->id_driver]) ?>">Delete</a>
+			</td>
+		</tr>
+	<?php endforeach; ?>
+		</table>
+
+
+	
+		
+	</body>
+	
+</html> 

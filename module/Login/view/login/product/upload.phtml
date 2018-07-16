@@ -1,31 +1,3 @@
 <?php 
 
-$form=$this->form;
-
-$form->prepare();  
-
-$form->setAttribute('action', $this->url('product-form'));
-
-$form->setAttribute('method', 'post');  
-
-$fileElement=$form->get('image_file');  
-
-
-	echo $this->form()->openTag($form);  
-?>
-
-
- <div class="form-element">
- 
-        <?= $this->formLabel($fileElement) ?>
-      		
-		<?= $this->formFile($fileElement);  ?>
-		
-        <?= $this->formElementErrors($fileElement) ?>
- </div>
- 
-
-
-<?= $this->formSubmit($form->get('upload')); ?> 
-
-<?= $this->form()->closeTag($form);  ?> 
+echo $this->navigation($this->page1);   

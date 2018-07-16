@@ -20,10 +20,12 @@ class LoginControllerFactory implements FactoryInterface  {
 		$loginForm=$container->get(LoginForm::class);  
 		
 		$userRegisterTable=$container->get(UserRegisterTable::class); 
+		
+		$aclTable=$container->get('aclTable'); 
 	
 		
 		
-		return new $requestedName($contactForm, $loginForm, $container, $userRegisterTable );
+		return new $requestedName($contactForm, $loginForm, $container, $userRegisterTable, $aclTable );
 		
 	}
 	

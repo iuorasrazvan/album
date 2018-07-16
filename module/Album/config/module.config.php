@@ -13,28 +13,40 @@ return [
 	  'router' => [
         'routes' => [
 		
-		/*
-            'album' => [
-                'type'    => Segment::class,
-                'options' => [
-                    'route' => '/album[/:action[/:id]]',
-                    'constraints' => [
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'id'     => '[0-9]+',
-                    ],
-                    'defaults' => [
-                        'controller' => Controller\AlbumController::class,
-                        'action'     => 'index',
-                    ],
-                ],
+			'album' => [
+				'type'    => Segment::class,
+				'options' => [
+					'route' => '/album[/:action[/:id]]',
+					'constraints' => [
+						'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+						'id'     => '[0-9]+',
+						
+					],
+					'defaults' => [
+						'controller' => 'albumController',
+						'action'     => 'index',
+						'message'=>'albums', 
+					],
+				],
+					
+			],
 				
 				
+			'album-page' => [
+				'type'    => Segment::class,
+				'options' => [
+					'route' => '/album/page[/:page]',
+					'constraints' => [
+						
+						'id'     => '[0-9]+',
+					],
+					'defaults' => [
+						'controller' => 'albumController',
+						'action'     => 'index',
+					],
+				],
 				
-				
-				
-            ],
-			
-		*/  
+			],
 			
 			'user' => [
                 'type'    => Segment::class,
@@ -68,13 +80,6 @@ return [
             ],
         ],
     ],
-	
-
-	
-	
-	
-	
-	
 	
 	
 	

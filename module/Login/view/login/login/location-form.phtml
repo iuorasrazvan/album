@@ -1,4 +1,8 @@
 <?php  
+
+
+
+
 $form = $this->form;
 $form->prepare();
 
@@ -13,10 +17,8 @@ $form->setAttribute('method', 'post');
 
 // Render the opening tag
 
-echo $this->form()->openTag ();
+echo $this->form($form);  
 
-echo $this->formCollection ($form);  
 
-echo $this->form()->closeTag ();  
 ?>
 

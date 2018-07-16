@@ -1,5 +1,7 @@
 <?php 
 
+
+
 $form=$this->form;
 
 $form->prepare ();  
@@ -10,6 +12,9 @@ $form->setAttribute ('method', 'post');
 
 // Get the form label plugin
 $formLabel = $this->plugin('formLabel');
+
+echo '<h2>'. $this->message. '</h2>';  
+
 
 ?>
 <h2> Register on this site </h2>  

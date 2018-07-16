@@ -58,7 +58,7 @@ class LocationForm   {
 										'label'=>'City name', 
 									], 
 									
-									'type'=>'text'
+									'type'=>'text',  
 									
 								
 								]
@@ -131,7 +131,7 @@ class LocationForm   {
 		$countryFieldset->add($continent);  
 		
 	
-       $form->add ($countryFieldset);  
+		$form->add ($countryFieldset);  
          
 
 		

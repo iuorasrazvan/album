@@ -11,6 +11,8 @@
  * file.
  */
  
+ 
+use Album\Model\Album;  
 
 
 use Album\Model\UserService1;
@@ -18,10 +20,14 @@ use Album\Model\UserService2;
 use Album\Model\UserService3;
 use Album\Model\UserService4;  
 use Zend\Session;   
-
-
 use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
+
+use Zend\Navigation\Navigation;   
+
+use Zend\Navigation\Page\AbstractPage;  
+use Zend\Router\Http\TreeRouteStack;  
  
+
 
 
   return  [
@@ -77,8 +83,143 @@ use Zend\ServiceManager\AbstractFactory\ConfigAbstractFactory;
 	'view'=>[
 		'base_title'=>'La porumb', 
 	
-	]
+	], 
+	
+	'navigation'=> [
+		'nav1'=>[
+		
+			[
+				'label'=>'Login form', 
+				'route'=>'login-form', 
+				'visible'=>true, 
+				
+				'rel'=>[
+					'start'=>[
+						'label'=>'PNL', 
+						'uri'=>'http://www.pnl.ro',    
+					
+					],
+					'next'=>[
+						'label'=>'Bogata',
+						'ur'=>'http://www.bogata.ro'
+					
+					], 
+					
+					'prev'=>[
+						'bales'=>'CHetani', 
+						'url'=>'http://www.chetani.ro', 
+					
+					]
+				
+				], 
+			
+			
+				'pages'=>[
+					[
+						'label'=>'Location',
+						'route'=>'location-form',  
+						
+						'pages'=>[
+							[
+								'label'=>'Product', 
+								'route'=>'product-form',
+								
+				
+										
+							],
+							
+							[
+								'label'=>'Contact', 
+								'route'=>'contact-form', 
+								'order'=>-10, 
+								
+										
+									
+							],
+									
+						
+						
+						],
+						
+					],
+					
+					[
+						
+						'label'=>'Register',
+						'route'=>'register-form',  
+						'pages'=>[
+							[
+								'label'=>'Product', 
+								'route'=>'product-form',
+								
+				
+										
+							],
+							
+							[
+								'label'=>'Contact', 
+								'route'=>'contact-form', 
+							
+										
+									
+							],
+									
+						
+						
+						]
+					
+					
+					
+					]
+				
+				
+					
+				
+				
+				
+				]
+			
+			
+			],
+	
+		
+		], 
+		
+		'nav2'=> [
+			[
+				'label'=>'Register form',
+				'route'=>'register-form', 
+				
+				'pages'=>[
+					[
+						'label'=>'Product form', 
+						'route'=>'product-form', 
+					
+					
+					], 
+					
+					'pages'=> [
+						'label'=>'Location form', 
+						'route'=>'location-form', 
+					
+					]
+				
+				]
+			
+			
+			]
+		
+		
+		
+		
+		]
+	
+	], 
+	
+	
 
+
+	
 	
 ]; 
 

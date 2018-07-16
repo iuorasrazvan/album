@@ -1,0 +1,83 @@
+
+		'nav1'=>[
+		
+			[
+				'label'=>'Login Form', 
+				'route'=>'login-form', 
+				'id'=>'p1', 
+				'title'=>'Login From', 
+			//	'target'=>'http://www.pnl.ro', 
+			//	'resource'=>new Album, 
+			//	'privilege'=>'delete', 
+			
+			
+			
+				'pages'=>[
+					[
+						'label'=>'Location',
+						'route'=>'location-form',  
+						
+						'pages'=>[
+							[
+								'label'=>'Product', 
+								'route'=>'product-form',
+								
+				
+										
+							],
+							
+							[
+								'label'=>'Contact', 
+								'route'=>'contact-form', 
+								'order'=>-10, 
+								
+										
+									
+							],
+									
+						
+						
+						],
+						
+					],
+					
+					[
+						
+						'label'=>'Register',
+						'route'=>'register-form',  
+						'pages'=>[
+							[
+								'label'=>'Product', 
+								'route'=>'product-form',
+								
+				
+										
+							],
+							
+							[
+								'label'=>'Contact', 
+								'route'=>'contact-form', 
+							
+										
+									
+							],
+									
+						
+						
+						]
+					
+					
+					
+					]
+				
+				
+				
+				
+				]
+			
+			
+			],
+			
+			
+			
+		]

@@ -1,0 +1,84 @@
+<?php  
+
+	$form=$this->driverForm;  
+
+	$title='Edit driver';
+	
+	$this->headTitle($title);  
+	
+
+?>
+
+	<h2><?= $this->escapeHtml($title) ?> </h2> 
+	
+<?php 
+
+	$id_driver=$form->get('id_driver');   	
+	$id_driver->setAttribute('value', $this->driverObj->id_driver);  
+	
+	$name=$form->get('name');  	
+	$name->setAttribute ('class','form-control');
+	$name->setAttribute('value', $this->driverObj->name);  
+	
+	$age=$form->get('age');
+	$age->setAttribute ('class','form-control');
+	$age->setAttribute('value', $this->driverObj->age);  
+	
+	$category=$form->get('category');  
+	
+	$category->setAttribute ('class','form-control');
+	$category->setAttribute('value', $this->driverObj->category);  
+	
+//	$captcha = $form->get('captcha'); 
+	
+	$csrf=  $form ->get('csrf');  
+	
+	
+	
+	$submit = $form->get('submit');
+	$submit->setAttribute('class', 'btn btn-primary');
+	
+	$form->setAttribute('action', $this->url('driver', ['action' => 'edit','id'=>$this->driverObj->id_driver]));
+	$form->prepare();
+?>
+	
+	<?= $this->form()->openTag($form); ?>
+	
+	<?= $this->formHidden ($id_driver); ?>
+
+	<div class="form-group">
+		<?= $this->formLabel($name) ?>
+		<?= $this->formElement($name) ?>
+		<?= $this->formElementErrors()->render($name, ['class' => 'help-block']) ?>
+	</div>
+
+	<div class="form-group">
+		<?= $this->formLabel($age) ?>
+		<?= $this->formElement($age) ?>
+		<?= $this->formElementErrors()->render($age, ['class' => 'help-block']) ?>
+	</div>
+	
+	<div class="form-group">
+		<?= $this->formLabel($category) ?>
+		<?= $this->formElement($category) ?>
+		<?= $this->formElementErrors()->render($category, ['class' => 'help-block']) ?>
+	</div>
+	
+	<div class="form-group">
+
+		<?= $this->formElement($csrf) ?>
+		<?= $this->formElementErrors()->render($csrf, ['class' => 'help-block']) ?>
+	</div>
+
+	<?php
+	
+	
+	echo $this->formSubmit($submit);
+
+	echo $this->form()->closeTag();
+	
+?> 
+	
+
+	
+		

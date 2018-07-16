@@ -43,6 +43,7 @@ class RegisterForm extends Form   {
 				'label' => 'name',
 			],
 		]);
+	
 		
 		
 		

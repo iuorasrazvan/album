@@ -11,14 +11,43 @@ use Zend\InputFilter\InputFilterAwareInterface;
 use Zend\InputFilter\InputFilterInterface;
 use Zend\Validator\StringLength;
 
+use Zend\Permissions\Acl\Resource\GenericResource as Resource; 
+use Zend\Permissions\Acl\ProprietaryInterface;  
+use Zend\Permissions\Acl\Acl;  
 
-class Album implements InputFilterAwareInterface
+
+
+class Album extends Resource implements InputFilterAwareInterface, ProprietaryInterface  
 {
     public $id;
     public $artist;
     public $title;
+
+	public $user ;
+	
+	
 	
 	private $inputFilter; 
+	
+	public function __construct ()  {
+		
+	
+		parent::__construct ('album'); 
+	
+		
+	}
+		
+	public function getOwnerId()
+    {
+      
+		
+		if ($this->user === null) {
+            return null;
+        }
+
+        return $this->user->getOwnerId();
+    
+	}
 
 
     public function exchangeArray(array $data)
@@ -26,7 +55,14 @@ class Album implements InputFilterAwareInterface
         $this->id     = !empty($data['id']) ? $data['id'] : null;
         $this->artist = !empty($data['artist']) ? $data['artist'] : null;
         $this->title  = !empty($data['title']) ? $data['title'] : null;
+		$this->user  = !empty($data['user']) ? $data['user'] : null;
     }
+	
+	
+	public function getArrayCopy ()  {
+		
+		return array($this->id, $this->artist, $this->title, $this->user); 
+	}
 	
 		
 	public function setInputFilter(InputFilterInterface $inputFilter)  {
@@ -37,10 +73,7 @@ class Album implements InputFilterAwareInterface
 	}
 	
 	
-	public function getArrayCopy ()  {
-		
-		return array($this->id, $this->artist, $this->title); 
-	}
+	
 
 	public function getInputFilter()
 	{

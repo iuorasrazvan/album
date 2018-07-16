@@ -57,9 +57,12 @@ use Zend\Authentication\AuthenticationService;
 use Zend\Authentication\Storage\Session as SessionStorage;
 
 use Zend\Session\SessionManager; 
+
 use Zend\Session\Container;  
 
 use Album\Controller\AlbumController; 
+
+use Zend\Permission\Acl;  
 
  
 
@@ -72,8 +75,9 @@ class LoginController extends AbstractActionController  implements InjectApplica
 	private $serviceLocator;
 	
 	private $userRegisterTable;  
+	private $aclTable;  
 	
-	public function __construct ($contactForm, $loginForm,  $serviceLocator, $table)  {
+	public function __construct ($contactForm, $loginForm,  $serviceLocator, $table, $aclTable)  {
 		
 		$this->contactForm=$contactForm;
 	
@@ -81,10 +85,9 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		
 		$this->serviceLocator=$serviceLocator;  
 	
-		
 		$this->userRegisterTable=$table;  
 		
-		 
+		$this->aclTable = $aclTable;  
 		
 	}
 	
@@ -99,46 +102,33 @@ class LoginController extends AbstractActionController  implements InjectApplica
 
 		$request=$this->getRequest ();
 
-		if ($request->isPost ())  { 
-
-			$data=$request->getPost ();
-
-			$contactForm->setData($data); 
-
-			if ($contactForm->isValid ()) { 
-
-			echo "data is valid </br>";
-
-		
-			print_R($contactObject);  
-
-
-
-			}
-
-			else  {
-				echo "data is invalid </br>";
-
-				$contactForm->getMessages ();
-
-
-			}
+		if (!$request->isPost ())  { 
+			
+			return array('form'=>$contactForm);  
 		}
 
+		$data=$request->getPost ();
 
+		$contactForm->setData($data); 
 
-		return array('form'=>$contactForm);  
-
+		if ($contactForm->isValid ()) { 
+			
+			// do staff
 		
-				
+		}
 		
+		else {
+			
+			return ['form'=>$contactForm];  
+		}
+
 	
 		
 	}
 	
 	public function locationFormAction ()   {
 	
-		
+
 				
 		$locationForm=(new LocationForm ())->getForm(); 
 	
@@ -151,39 +141,31 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		
 		$request=$this->getRequest();
 		
-	    if (isset($_GET) && !empty($_GET))  { 
+	    if (!$request->isPost())  { 
 		
-		 
+			return ['form'=>$locationForm];
+			
+		}
+		$data=$request->getPost ();  	
 		
-			$data=$_GET;
-			
-			$locationForm->setData($data); 
-			
-			if ($locationForm->isValid ()) { 
-			
+		$locationForm->setData($data); 
 		
-				print_R($locationObject);  
+		if ($locationForm->isValid ()) { 
 		
-				return array ('form'=>$locationForm);  
-				
-			}
-			
-			else  {
-				echo "data is invalid </br>";
-				
-				$locationForm->getMessages ();
-				
-				return array ('form'=>$locationForm);  
-			}
+
+			// do staff 
 			
 		}
 		
 		else  {
+
 			
+			return array ('form'=>$locationForm);  
 			
-			return array('form'=>$locationForm);  
 		}
-			
+		
+		
+		
 			
 		
 	}
@@ -194,63 +176,68 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		
 			$container=new Container('login');
 			
-			if (isset ($container->userLogin))  {
+			$loginUser=$container->userLogin;  
+
+		
+			if (isset ($loginUser))  {
 				
-				return (['user'=>$container->userLogin->name]) ; 
+				$user=$this->userRegisterTable->getUser($loginUser->id_user);  
 			
-			
-				
+				return ['user'=>$user];  
+			                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                	
+						
 			}
 			
-			else { 
+			
+			$userLogin=new UserLogin ();  
+			
+			$userLogin->username='username'; 
+			
+			$userLogin->password='your password'; 
 		
 			
-				$userLogin=new UserLogin ();  
+			
+			$loginForm=$this->loginForm->getForm ();   
+			
+			
+			$loginForm->bind ($userLogin);  
+			
+			$message=$this->params()->fromQuery('message');  
+			
+			$error = $this->params()->fromQuery('error');  
+			
+			
+		
+			$request=$this->getRequest();  
+		   
+			
+			if(!$request->isPost())  {
 				
-				$userLogin->username='username'; 
+	 
+				return array ('form'=>$loginForm, 'message'=>$message, 'error'=>$error);  
+			}
 				
-				$userLogin->password='your password'; 
+			else {
 			
 				
+				$data=$request->getPost ();
 				
-				$loginForm=$this->loginForm->getForm ();   
-				
-				
-				$loginForm->bind ($userLogin);  
+				$loginForm->setData($data);  
 			
-				$request=$this->getRequest();  
-			   
-				
-				if($request->isPost())  {
-				
-				
-					$data=$request->getPost ();
-					
-					$loginForm->setData($data);  
-				
-					if ($loginForm->isValid ())  {
-						$this->authenticate ($userLogin->username, $userLogin->password);  
-										
-					}
-					
-					else {
-						
-						echo 'bad credentials';  
-						
-						$messages=$loginForm->getMessages(); 
-						
-						
-					}
-						
-					
+				if ($loginForm->isValid ())  {
+					$this->authenticate ($userLogin->username, $userLogin->password);  
+									
 				}
 				
-				
-				return array ('form'=>$loginForm);  
+				else {
+					return ['form'=>$loginForm];  
+					
+					
+				}
+							
 				
 			}
-		
-			
+				
 				
 		
 	}	
@@ -274,62 +261,59 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		
 		$request=$this->getRequest ();  
 		
-		if ($request->isPost())  {
+		if (!$request->isPost())  {
 			
-			$data=$request->getPost();
+			return ['form'=>$registerForm];  
 			
-			$registerForm->setData($data);  
-			
-			if ($registerForm->isValid()) {
-				
-				    $username_exists=$this->userRegisterTable->checkDuplicate($userRegister->username);  
-					
-					if ($username_exists)  {
-						
-						echo $userRegister->username. ' already exists';  
-					}
-
-					
-					else   {
-						
-						$userData['id_user']='';  
-											
-						$userData['username']=$userRegister->username;  
-						
-						$userData['random_bytes']=random_bytes(32);
-						
-						$userData['password_salt']=md5($userRegister->password.$userData['random_bytes']);
-					
-						$userData['password']= password_hash ($userRegister->password, PASSWORD_DEFAULT);  
-							
-						
-						$userData['name']=$userRegister->name;  
-						
-						
-						$this->userRegisterTable->insert($userData);
-						
-						$this->authenticate($userRegister->username, $userRegister->password);
-					
-						
-						
-					}
-		
-					
-
-				
-			}
-			
-			else {
-				
-				//print_r ($registerForm->getMessages ());  
-			}
 		}
+			
+		$data=$request->getPost();
 		
-		return ['form'=>$registerForm];  
+		
+			
+		$registerForm->setData($data);  
+		
+			
+		if ($registerForm->isValid()) {
+			 
+			
+				$username_exists=$this->userRegisterTable->checkDuplicate($userRegister->username);  
+				
+				if ($username_exists)  {
+					
+					return ['form'=>$registerForm, 'message'=>'username already exists'];  
+				}
+
+				
+				else   {
+				
+					
+					$this->userRegisterTable->insertUser($userRegister);
+
+
+					
+					$this->authenticate($userRegister->username, $userRegister->password);
+	
+					
+				}
+
+			
+		}
+			
+		else {
+			
+			
+			return ['form'=>$registerForm];    
+		}
+			
+			
+	}
+		
+	
 			
 		
 		
-	}
+	
 	
 	
 	public function authenticate ($username, $password)   {
@@ -370,33 +354,37 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		
 		$authService=new AuthenticationService ;   
 		
-		$storage= new SessionStorage ('login');  
-
-		$authService->setStorage($storage);
+	
 
 		$result = $authService->authenticate ($dbAuthAdapter);
-			
 			
 		
 		
 		
 		if (! $result->isValid()) {
-			echo 'invalid credentials'; 
+		
+			return $this->redirect()->toRoute('login-form',[], ['query'=>['error'=>'Invalid credentials']]);   
 		}
 		
 		else {
-			$exclude=['password','password_salt','random_bytes'];  
 			
-			
+			$exclude=['password','password_salt','random_bytes'];  			
 			
 			$result = $dbAuthAdapter->getResultRowObject(null,$exclude);
 			
 			$container =new Container('login');
 		
 			$container->userLogin=$result;  
-		
-			$this->redirect()->toRoute('album');  
 			
+			$auth=$this->serviceLocator->get('auth');
+			
+			$auth->login='yes';  
+		
+			$this->redirect()->toRoute('login-form');
+			
+		
+			
+		
 			
 				
 
@@ -421,6 +409,15 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		$this->redirect()->toRoute('login-form');  
 		
 	    
+		
+	}
+	
+	
+	public function loginMessageAction () {
+		
+		$entity = $this->params()->fromRoute('entity');  
+		
+		return ['entity'=>$entity];  
 		
 	}
 	

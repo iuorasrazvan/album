@@ -36,7 +36,8 @@
         "zendframework/zend-config": "^3.2",
         "zendframework/zend-permissions-acl": "^2.7",
         "zendframework/zend-permissions-rbac": "^3.0",
-        "zendframework/zend-paginator": "^2.8"
+        "zendframework/zend-paginator": "^2.8",
+        "zendframework/zend-navigation": "^2.9"
     },
     "autoload": {
         "psr-4": {
@@ -49,7 +50,7 @@
 			"Album\\":"module/Album/src/", 
 			"Login\\":"module/Login/src/", 
 			"Database\\":"module/Database/src/",
-			"Acl\\":"module/Acl/src/"
+			"Driver\\":"module/Driver/src/"
         }
     },
     "extra": [],

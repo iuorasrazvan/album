@@ -52,30 +52,57 @@ use Database\Model\Article;
 
 use Database\Model\User;  
 
+use Zend\View\Renderer\PhpRenderer;
+use Zend\View\Resolver\AggregateResolver; 
+use Zend\View\Resolver\TemplateMapResolver;  
+use Zend\View\Resolver\RelativeFallbackResolver;  
+
+
+
 class DatabaseController extends AbstractActionController    {
 	
+	protected $table;  
+	
+	public function __construct ($table)  {
+		
+		$this->table =  $table;  
+		
+	
+	}
 	
 	
+	
+	
+	public function routeAction ()  {
+		
+		$hydrator = new \Zend\Hydrator\ClassMethods();
+
+		$a = new A();
+		
+		$a->b=44; 
+
+
+	
+
+
+		$data=$hydrator->extract ($a);  
+		
+		print_r ($data);  
+	
+			
+	}
 	
 	public function route1Action ()  {
 		
-		 echo 'route action1';  
 		
-			
+	  
+		
 	}
 	
 	
 	public function route2Action ()  {
 		
-		$serviceManager= $this->getEvent ()->getApplication()->getServiceManager ();  
 		
-		$session = $serviceManager->get(SessionManager::class);  
-	    $session->destroy();  ; 
-
-		print_r($_SESSION['cucu']);  
-		
-		
-	 
 	  
 		
 	}
@@ -89,6 +116,31 @@ class DatabaseController extends AbstractActionController    {
 	}
 	
 	
+}
+
+
+class A   {
+	public $a, $b;  
+	
+	public function setA  ($a)  {
+		
+		$this->a=$a;  
+	}
+	
+	public function getA ()  {
+		
+		return $this->a;   
+	}
+	
+	public function setB  ($b)  {
+		
+		$this->b=$b;  
+	}
+	
+	public function getB ()  {
+		
+		return $this->b;   
+	}
 }
 
 

@@ -1,0 +1,13 @@
+<?php  
+	$driver=$this->driver;
+	
+?> 
+<h3>Are you sure you want to delete driver <?= $driver->name ?> having the category <?= $driver->category; ?> ? </h3>
+<form action="<?php echo $this->url('driver',['action'=>'delete', 'id'=>$driver->id_driver]) ?>" method="post"> 
+
+	<button class="btn btn-danger" name="choose" value="yes">Yes</button>
+
+	<button class="btn btn-primary" name="choose" value="no">No</button>
+</form> 
+
+

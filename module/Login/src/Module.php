@@ -22,8 +22,14 @@ use Zend\Db\ResultSet\ResultSet;
 
 use Zend\Session\Container;  
 
+use Zend\Navigation\Page\Mvc;  
 
+use Zend\Permissions\Acl\Acl;  
+use Login\Model\User\UserRegister;  
+use Album\Model\Album;  
+use Zend\Mvc\MvcEvent;  
 
+use Login\Model\Navigation\View\MyHelper;  
 
 
 class Module
@@ -33,14 +39,66 @@ class Module
         return include __DIR__ . '/../config/module.config.php';
     }
 	
-	public function onBoostrap ($e)  {
+	public function onBootstrap ($e)  {
 		
 		$app=$e->getApplication();
-		$eventManager=$app->getEventManager ();  
-			
-	    $eventManager->attach('dispatch', array($this, 'onDispatch'));  
+	
+		$eventManager=$app->getEventManager (); 
+		
+		$eventManager->attach ('route', [$this, 'onRoute']);  
+		
+		
 		
 	}
+	
+		
+	public function onRoute  (MvcEvent $e)   {
+		
+		$container= new Container('login');
+		
+		$userLogin=$container->userLogin;  
+		
+		$routeMatch = $e->getRouteMatch ();  
+		
+		$controller= $routeMatch->getParam ('controller');
+		
+		$routeName=$routeMatch -> getMatchedRouteName(); 
+		
+		switch ($routeName)  {
+			case 'album' : $message='albums';
+			
+			break;
+			
+			case 'driver': $message='drivers'; 
+			
+			break; 
+			
+			default:  $message=null;  
+			
+			
+		}
+		
+		
+	
+		
+	
+		if ($controller !='login')  {
+			
+		
+			if (!isset($userLogin))  {
+				
+
+				$e->getResponse()->setStatusCode(301)->getHeaders()->addHeaders(['location' => '/?message='.$message]);
+				return $e->getResponse();
+				
+			
+			}  
+			
+		}
+			
+		
+	}
+	
 	
 	public function init (ModuleManager $moduleManager)  {
 		
@@ -67,7 +125,7 @@ class Module
 		}
         		
 		
-		
+	
 	}
 	
 
@@ -105,7 +163,30 @@ class Module
 				
 				self::class=>InvokableFactory::class, 
 				
+				Model\User\UserRegister::class=>InvokableFactory::class,  
+				
+			
+				
+				Module::class=>InvokableFactory::class, 
+				Model\Auth\AuthService::class=>Model\Auth\AuthServiceFactory::class, 
+				Model\Auth\AuthService::class=>InvokableFactory::class, 
+				
+				
+				
 			],
+			
+			'services'=>[
+				
+				
+			
+			], 
+			
+			'aliases'=>[
+				 'userRegister'=>Model\User\UserRegister::class, 
+				 'userRegisterTable'=>Model\User\UserRegisterTable::class, 
+				 'auth'=>Model\Auth\AuthService::class, 
+			
+			]
 			
 	
 		
@@ -136,11 +217,7 @@ class Module
 		
 	}
 	
-	
-	public function onDispatch ($e)  {
-		echo $e->getTarget();  
-		
-	}
+
 	
 	
 }

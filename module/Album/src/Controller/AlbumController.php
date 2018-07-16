@@ -12,35 +12,94 @@ use Album\Filter\AlbumFilter;
 
 use Zend\Session\Container;  
 
+use Zend\Permissions\Acl\Acl;  
+ 
+use Login\Model\User\UserRegister;  
+
+use Zend\Permissions\Acl\Resource\GenericResource as Resource  ; 
+
+
+use Zend\Permissions\Acl\Assertion\OwnershipAssertion;
+
+use Zend\Permissions\Acl\Assertion\ExpressionAssertion;
+
+use Album\Model\Paginator\AlbumDbSelect;  
+
+use Zend\Db\Sql\Select;  
+
+use Zend\Paginator\Paginator;  
+
+use Zend\Paginator\Adapter\DbSelect;
+
+use Zend\Cache\StorageFactory;
+
+
+
+
 
 
 class AlbumController extends AbstractActionController   {
 	
-	private $table;
+	private $table, $album, $userRegister, $aclTable, $userRegisterTable , $container, $filter;
+	
 
-    // Add this constructor:
-    public function __construct(AlbumTable $table)
+	
+    public function __construct(AlbumTable $table,  UserRegister $userRegister, $aclTable, $userRegisterTable, $container )
     {
         $this->table = $table;
 		
+		
+		
+		$this->userRegister=$userRegister;
+		
+		$this->aclTable=$aclTable; 
+		
+		$this->userRegisterTable = $userRegisterTable;  
+		
+		$this->container=$container;  
+		
 		$this->filter=new AlbumFilter (); 
-    }
-    public function indexAction()
-    {
-		$container =new Container('login');
-		$user=$container->userLogin->name;  
+		
+	}
+	
+    public function indexAction()   {
+		
+		
+		$acl=$this->aclTable->getAcl ();
+		
+		$id=(new Container ('login'))->userLogin->id_user;
+		
+		$user=$this->userRegisterTable->getUser($id);  
+		
+		$paginator = $this->table->fetchAll(true);  
+		
+		$page = $this->params()->fromRoute('page');
+		
+		$page=$page<0 ? 1 :$page;  
+		
+		$paginator->setCurrentPageNUmber ($page); 
+		
+		$paginator ->setItemCountPerPage(2);   
+		
+		
 		
 		return new ViewModel([
-            'albums' => $this->table->fetchAll(),
-			'user'=>$user
+            'albums' => $paginator,
+			'user'=>$user, 
+
+			'acl'=>$acl, 
+			
+		//	'paginator'=>$paginator, 
+			
         ]);
 		
 		
     }
 
-    public function addAction()
+    public function addAction() { 
 	
-    {
+
+	
 		$form=new AlbumForm ();  
 		
 		$form->get('submit')->setValue('Add');
@@ -55,6 +114,10 @@ class AlbumController extends AbstractActionController   {
 
 		$album = new Album();
 		
+	   
+		
+		$form->bind ($album);  
+		
 		$form->setInputFilter($this->filter->getInputFilter()); 
      
         $form->setData($request->getPost());
@@ -63,15 +126,35 @@ class AlbumController extends AbstractActionController   {
         if (! $form->isValid()) {
             return ['form' => $form];
         }
-
-        $album->exchangeArray($form->getData());
 		
-        $this->table->saveAlbum($album);
+		$id_user =(new Container ('login'))->userLogin->id_user;
+		
+		$user= $this->userRegisterTable->getUser($id_user); 	
+		
+	    $album->user=$user; 
+		
+		
+        $this->table->saveAlbum($album); 
+		 
+	
+		
+	 	$acl=$this->aclTable->getAcl (); 
+		
+
+		
+		$acl->allow ( 'guest', 'album', 'delete', new OwnershipAssertion());  
+		
+		$this->aclTable->updateAcl ($acl); 
+				
+		 
+				
+		
+	
+	
+		
         return $this->redirect()->toRoute('album');
 		
-		
-		
-		
+	
       
     }
 
@@ -158,11 +241,7 @@ class AlbumController extends AbstractActionController   {
     }
 	
 	
-	public function loginMessageAction ()   {
-			
-		
-		
-	}
+	
 }
 	
 	

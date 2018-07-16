@@ -3,7 +3,19 @@
 namespace Album\Model;
 
 use RuntimeException;
+
 use Zend\Db\TableGateway\TableGatewayInterface;
+use Zend\Db\ResultSet\ResultSet;  
+use Zend\Db\Sql\Select;
+
+use Zend\Paginator\Adapter\DbSelect;
+use Zend\Paginator\Adapter\ArrayAdapter;  
+use Zend\Paginator\Paginator;
+
+use Album\Model\Paginator\AlbumDbSelect;  
+
+
+
 
 class AlbumTable
 
@@ -15,10 +27,37 @@ class AlbumTable
         $this->tableGateway = $tableGateway;
     }
 
-    public function fetchAll()
-    {
+    public function fetchAll($paginated)  {
+		
+		if ($paginated)  {
+			
+			return $this->fetchPaginatedResults();
+			
+		}
         return $this->tableGateway->select();
     }
+	
+	public function  fetchPaginatedResults ()   {
+		
+		
+		
+		$select = new Select ($this->tableGateway->getTable());  
+		$resultSet =new ResultSet ();  
+		$resultSet->setArrayObjectPrototype (new Album);  
+		
+		$paginatorAdapter = new DbSelect ($select, $this->tableGateway->getAdapter(), $resultSet);  
+		
+
+		
+		$paginator = new Paginator ($paginatorAdapter); 
+		
+		return $paginator;  
+		
+		
+		
+	}
+	
+	
 
     public function getAlbum($id)
     {
@@ -37,10 +76,14 @@ class AlbumTable
 
     public function saveAlbum(Album $album)
     {
+		
         $data = [
             'artist' => $album->artist,
             'title'  => $album->title,
+			'user'=>serialize($album->user), 
         ];
+		
+
 		
 		$id=isset($album->id)? $album->id:0;
 		
@@ -48,7 +91,8 @@ class AlbumTable
 
         if ($id === 0) {
             $this->tableGateway->insert($data);
-            return;
+			
+            return ; 
         }
 
         if (! $this->getAlbum($id)) {
@@ -65,4 +109,12 @@ class AlbumTable
     {
         $this->tableGateway->delete(['id' => (int) $id]);
     }
+	
+	
+	public function getIdAlbum($title)  {
+		$resultSet=$this->tableGateway->select(['title'=>$title]);
+		
+		return $resultSet->current()->id;
+		
+	}
 }

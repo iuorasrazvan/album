@@ -18,6 +18,14 @@ use Zend\Session\Container;
 
 use Zend\Router\Http\Segment;    
 
+use Zend\Mvc\MvcEvent;  
+
+
+use Zend\Http\Response;  
+
+use Zend\Http\Request; 
+
+use Zend\Authentication\Storage\Session;  
 
 
 
@@ -30,75 +38,23 @@ class Module implements ConfigProviderInterface
         return include __DIR__ . '/../config/module.config.php';
     }
 	
-	public function onBootstrap ($e)  {
+	public function onBootstrap (MvcEvent $e)  {
 		$app =$e->getApplication ();
 		$eventManager=$app->getEventManager ();
 		
-		$router = $e->getRouter();  
-		$container =new Container ('login');
-		$userLogin=$container->userLogin;  
-		if (isset($userLogin) && !empty ($userLogin))  {
-		    
-			$router->addRoutes([
-			
-				'album' => [
-					'type'    => Segment::class,
-					'options' => [
-						'route' => '/album[/:action[/:id]]',
-						'constraints' => [
-							'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-							'id'     => '[0-9]+',
-						],
-						'defaults' => [
-							'controller' => Controller\AlbumController::class,
-							'action'     => 'index',
-						],
-					],
-					
-				],
-			]); 
-		}
+	
 		
-		else {
-			
-			
-			
-			$router->addRoutes ([
-			
-				'album' => [
-					'type'    => Segment::class,
-					'options' => [
-						'route' => '/album[/:action[/:id]]',
-						'constraints' => [
-							'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-							'id'     => '[0-9]+',
-						],
-						'defaults' => [
-							'controller' => Controller\AlbumController::class,
-							'action'     => 'loginMessage',
-						],
-					],
-					
-				],
-			]); 
-			
-			
-			
 		
-		}
 		
 	
 	}
-		
-	public function onRoute ($e) {  
-		
-			
-		
-	}
-	
-	
-	
 
+
+	
+	
+	
+	
+	
 	
 	 public function getServiceConfig()   {
 		 
@@ -119,20 +75,40 @@ class Module implements ConfigProviderInterface
                     $resultSetPrototype->setArrayObjectPrototype(new Model\Album());
                     return new TableGateway('album', $dbAdapter, null, $resultSetPrototype);
                 },
+				
+				Model\AclTable::class =>function ($container, $requestedName)  {
+					$dbAdapter=$container->get(AdapterInterface::class);  
+					return new $requestedName($dbAdapter);  
+					
+					
+				}, 
+				
+			
+				
+			
 		
 				Model\UserService1::class=>Model\UserService::class,
 				Model\UserService2::class=>Model\UserService::class,
-				
 			
+				
+				Model\Album::class=>InvokableFactory::class, 
 				
 			],
 			
 			
-			
+		
 			
 			'abstract_factories' => [
 				ConfigAbstractFactory::class,
 			],
+			
+			'aliases'=> [
+				'albumTable'=>Model\AlbumTable::class, 
+				'album'=>Model\Album::class,
+				'aclTable'=>Model\AclTable::class, 
+				
+			
+			]
 			
 			
 		
@@ -147,18 +123,23 @@ class Module implements ConfigProviderInterface
     {
         return [
             'factories' => [
-                Controller\AlbumController::class => function($container) {
-                    return new Controller\AlbumController(
-                        $container->get(Model\AlbumTable::class)
-                    );
+                Controller\AlbumController::class => function($container, $requestedName) {
+					
+					$albumTable=$container->get ('albumTable');  
+			
+					$userRegister=$container->get('userRegister');
+					$aclTable=$container->get('aclTable');
+					$userRegisterTable=$container->get('userRegisterTable');
+				
+					
+					return new $requestedName($albumTable, $userRegister, $aclTable,$userRegisterTable,  $container); 
+                    
                 },
 				
 				Controller\UserController::class =>InvokableFactory::class,
 				
 				Controller\GuestController::class => function ($container, $requestedName) {
 					
-					
-					return new $requestedName($container); 
 				}
 
 				 
@@ -168,7 +149,9 @@ class Module implements ConfigProviderInterface
 			
 				'user'=>Controller\UserController::class,
 				'guest'=>Controller\GuestController::class, 
-				'album'=>Controller\AlbumController::class, 
+				'albumController'=>Controller\AlbumController::class, 
+				
+			
 
 			
 			]

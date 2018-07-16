@@ -1,17 +1,24 @@
 <?php  
 
-
-
-
-
+use Zend\Paginator\Paginator;
+use Zend\View\Helper\PaginationControl;
 
 $title = 'My albums';
-$this->headTitle($title);
-$user=$this->user;  
-$logout= $this->url('logout-route');  
-?>
 
-<h1><?= 'Hello, '.$this->escapeHtml($user) ?>&nbsp;&nbsp;<a href="<?= $logout; ?>">Logout</a></h1>
+$this->headTitle($title);   
+$drivers=$this->url('driver');
+
+$user=$this->user;
+
+$acl= $this->acl; 
+
+isset ($this->paginator) ? $albums=$this->paginator : $albums=$this->albums;  
+
+
+?>
+<h3><a href="<?= $drivers ;?>">Go to drivers</a></h3> 
+
+<h3><a href="<?= $this->url('login-form') ;?>">Go to main page</a></h3> 
 
 
 <h2><?= $this->escapeHtml($title) ?></h2>
@@ -27,15 +34,62 @@ $logout= $this->url('logout-route');
     <th>Artist</th>
     <th>&nbsp;</th>
 </tr>
-<?php foreach ($albums as $album) : ?>
+<?php foreach ($albums as $album) : 
+   $album->user =unserialize ($album->user); 
+
+
+?>
     <tr>
         <td><?= $this->escapeHtml($album->title) ?></td>
         <td><?= $this->escapeHtml($album->artist) ?></td>
         <td>
             <a href="<?= $this->url('album', ['action' => 'edit', 'id' => $album->id]) ?>">Edit</a>
-            <a href="<?= $this->url('album', ['action' => 'delete', 'id' => $album->id]) ?>">Delete</a>
+		</td> 
+		<td> 
+			<?php 
+			
+			if ( $acl->isAllowed( $user, $album , 'delete')) { ?>
+			
+			<a href="<?= $this->url('album', ['action' => 'delete', 'id' => $album->id]) ?>">Delete</a>
+			
+			<?php 
+			}
+			else {
+				
+				echo 'Delete';  
+			}
+			
+			
+			?>
+			
         </td>
+		<td>
+			
+		
+		
+		</td> 
+		
+	
+		
     </tr>
+	
 <?php endforeach; ?>
 </table>
 
+<?php 
+
+
+
+	echo $this->paginationControl (
+		$albums, 
+		'Sliding', 
+		'partials/paginator',
+		[
+			'route'=>'album-page', 
+		
+		]
+	
+	);
+	
+	
+	

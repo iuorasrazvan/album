@@ -9,11 +9,18 @@ use Zend\View\Model\ViewModel;
 use Login\Form\Product\ProductForm;  
 use Login\Form\Upload\UploadForm;  
 
+use Zend\Navigation\Page\Mvc;
+use Zend\Router\Http\Segment;
+use Zend\Router\Http\TreeRouteStack;
+
 use Login\Model\Product\Product;   
+
+use Login\Model\Pages\Page1;  
+
 
 class ProductController extends AbstractActionController  {
 	
-	public function indexAction ()  {
+	public function productAction ()  {
 		
 		
 		
@@ -52,32 +59,48 @@ class ProductController extends AbstractActionController  {
 	
 	
 	public function uploadAction ()  {
-		
-		$uploadForm=new UploadForm ('upload');  
-		
-		$request=$this->getRequest ();  
-		
-		if ($request->isPost())  {
-		
-            $post=array_merge_recursive($request->getPost()->toArray(), $request->getFiles()->toArray());  
+		$route1=Segment::factory ([
+			'route'=>'/:controller/:action',  
+			'defaults'=>[
+				'controller'=>'product', 
+				'action'=>'upload',
 			
-			$uploadForm->setData($post);  
-			
-			if ($uploadForm->isValid()) {
-				
-				print_R($data = $uploadForm->getData() );
-
-				// Form is valid, save the form!
-				//return $this->redirect()->toRoute('product-form');
-			}
-			
-		}
-
+			]
 		
 		
-		return array ('form'=>$uploadForm);   
-	  
+		]);  
+		
+		
+		$router= $this->getEvent()->getRouter ();  
+		
 	
+		$routeMatch= $router->match($this->getRequest());  
+		
+	
+		
+		$page1= new Mvc ([
+		
+			'label'=>'Page1', 
+			'route'=>'upload', 
+		
+			'router'=>$router, 
+			'routeMatch'=>$routeMatch, 
+			
+		
+		]);  
+		
+		
+		echo $page1->isActive ();  
+		
+		
+		echo $page1->getHref ();  
+		
+		
+		
+		
+		return ['page1'=>$page1];  
+		
+
 	
 	
 	

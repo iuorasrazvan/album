@@ -19,17 +19,31 @@ class UserRegisterTable {
 	}
 	
 	
-	public function insert ($data)   {
+	public function insertUser ($user)   {
+		
+		$data['id_user']='';
+		$data['username']=$user->username;
+		$data['password']= password_hash ($user->password, PASSWORD_DEFAULT);  
+		$data['random_bytes']=random_bytes(32);
+						
+		$data['password_salt']=md5($user->password.$data['random_bytes']);
+		
+					
+		$data['name']=$user->name;
+	
+		
 		
 		$this->table->insert($data);  
+		
+	
+	
 		
 	}
 	
 	public function checkDuplicate ($username)  {
 		
 		$where=new Where ();  
-		
-		
+				
 		
 		$where->equalTo('username',$username,$where::TYPE_IDENTIFIER, $where::TYPE_VALUE);  
 		
@@ -69,6 +83,22 @@ class UserRegisterTable {
 		return $result; 
 		
 		
+	}
+	
+	public function getUser ($id)  {
+		
+		$resultSet=$this->table->select(['id_user'=>$id]);
+		$user=$resultSet->current ();
+		return $user; 
+	}
+	
+	public function getIdUser ($username)  {
+		
+		$resultSet=$this->table->select(['username'=>$username]);
+		$id_user=$resultSet->current()->id_user;  
+		
+		return $id_user;
+	
 	}
 	
 	

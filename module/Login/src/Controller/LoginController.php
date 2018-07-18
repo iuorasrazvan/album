@@ -50,7 +50,6 @@ use Zend\Db\Adapter\AdapterInterface;
 
 use Zend\Authentication\Storage\Session;  
 
-use Zend\Authentication\Adapter\DbTable\CallbackCheckAdapter; 
 
 use Zend\Authentication\AuthenticationService;  
 
@@ -63,6 +62,8 @@ use Zend\Session\Container;
 use Album\Controller\AlbumController; 
 
 use Zend\Permission\Acl;  
+
+use Login\Model\Auth\AuthService;  
 
  
 
@@ -77,7 +78,9 @@ class LoginController extends AbstractActionController  implements InjectApplica
 	private $userRegisterTable;  
 	private $aclTable;  
 	
-	public function __construct ($contactForm, $loginForm,  $serviceLocator, $table, $aclTable)  {
+	private $auth;  
+	
+	public function __construct ($contactForm, $loginForm,  $serviceLocator, $table, $aclTable, $auth)  {
 		
 		$this->contactForm=$contactForm;
 	
@@ -88,6 +91,8 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		$this->userRegisterTable=$table;  
 		
 		$this->aclTable = $aclTable;  
+		
+		$this->auth=$auth;  
 		
 	}
 	
@@ -174,28 +179,25 @@ class LoginController extends AbstractActionController  implements InjectApplica
 
 	public function loginFormAction () {
 		
-			$container=new Container('login');
-			
-			$loginUser=$container->userLogin;  
-
-		
-			if (isset ($loginUser))  {
+			if ($this->auth->hasIdentity()) {
 				
-				$user=$this->userRegisterTable->getUser($loginUser->id_user);  
+				$id_user=$this->auth->getIdentity ()->id_user;  
+			
+				
+				$user=$this->userRegisterTable->getUser($id_user);  
+			
 			
 				return ['user'=>$user];  
 			                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                	
 						
 			}
 			
-			
 			$userLogin=new UserLogin ();  
 			
 			$userLogin->username='username'; 
 			
 			$userLogin->password='your password'; 
-		
-			
+				
 			
 			$loginForm=$this->loginForm->getForm ();   
 			
@@ -204,17 +206,18 @@ class LoginController extends AbstractActionController  implements InjectApplica
 			
 			$message=$this->params()->fromQuery('message');  
 			
-			$error = $this->params()->fromQuery('error');  
-			
-			
+			$redirect= $this->params()->fromQuery('redirect');  
+					
 		
 			$request=$this->getRequest();  
 		   
 			
 			if(!$request->isPost())  {
-				
+			
 	 
-				return array ('form'=>$loginForm, 'message'=>$message, 'error'=>$error);  
+				return array ('form'=>$loginForm, 'message'=>$message, 'redirect'=>$redirect); 
+						
+					
 			}
 				
 			else {
@@ -223,14 +226,23 @@ class LoginController extends AbstractActionController  implements InjectApplica
 				$data=$request->getPost ();
 				
 				$loginForm->setData($data);  
+				
+				$this->params()->fromRoute('redirect');
 			
 				if ($loginForm->isValid ())  {
-					$this->authenticate ($userLogin->username, $userLogin->password);  
+					
+					$result=$this->authenticate ($userLogin->username, $userLogin->password);  
+					if (isset($result['error']))  {
+						
+						return ['error'=>$result['error'],'form'=>$loginForm];  
+					}
+					
+					
 									
 				}
 				
 				else {
-					return ['form'=>$loginForm];  
+					return ['form'=>$loginForm, 'message'=>'neconform credentials'];  
 					
 					
 				}
@@ -318,31 +330,15 @@ class LoginController extends AbstractActionController  implements InjectApplica
 	
 	public function authenticate ($username, $password)   {
 		
-		$callback = function ($hash, $password)  {
-						return password_verify($password, $hash);  
-					}; 
-				
-			 
-		$dbAdapter=$this->serviceLocator->get(AdapterInterface::class);  
-			
-			
-		$dbAuthAdapter =  new CallbackCheckAdapter  (
-			
-			$dbAdapter, 
-			'users', 
-			'username',
-			'password',
-			 $callback
-			
+	 	$authAdapter=$this->auth->getAdapter(); 
 		
-
-		);
 			
-		$dbAuthAdapter->setIdentity($username);
+		$authAdapter->setIdentity($username);
 		
-		$dbAuthAdapter->setCredential($password); 
+		$authAdapter->setCredential($password); 
 		
-		$select = $dbAuthAdapter->getDbSelect();
+		
+		$select = $authAdapter->getDbSelect();
 		
 		$random_bytes=$this->userRegisterTable->select_random_bytes($username);
 		
@@ -350,45 +346,43 @@ class LoginController extends AbstractActionController  implements InjectApplica
 			'password_salt'=>md5($password.$random_bytes)
 		]);  
 		
-
-		
-		$authService=new AuthenticationService ;   
-		
 	
 
-		$result = $authService->authenticate ($dbAuthAdapter);
+		$result = $this->auth->authenticate ();
 			
 		
 		
 		
 		if (! $result->isValid()) {
+			
+			
 		
-			return $this->redirect()->toRoute('login-form',[], ['query'=>['error'=>'Invalid credentials']]);   
+			return ['error'=> current($result->getMessages())];     
 		}
 		
-		else {
-			
-			$exclude=['password','password_salt','random_bytes'];  			
-			
-			$result = $dbAuthAdapter->getResultRowObject(null,$exclude);
-			
-			$container =new Container('login');
 		
-			$container->userLogin=$result;  
-			
-			$auth=$this->serviceLocator->get('auth');
-			
-			$auth->login='yes';  
 		
-			$this->redirect()->toRoute('login-form');
-			
 		
-			
 		
+		$exclude=['password','password_salt','random_bytes'];  			
+		
+		$row = $authAdapter->getResultRowObject(null,$exclude);
+		
+		$this->auth->getStorage()->write($row);  //Storage user object in session.
+
+		$url=$this->params()->fromQuery('redirect'); 
+		
+		if ($url) {
+			 return $this->redirect()->toUrl($url);
+		} else {
+			 return $this->redirect()->toRoute('login-form');
+		}
+				
+			
 			
 				
 
-		}
+		
 			
 				
 						

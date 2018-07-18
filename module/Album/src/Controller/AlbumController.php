@@ -49,7 +49,6 @@ class AlbumController extends AbstractActionController   {
         $this->table = $table;
 		
 		
-		
 		$this->userRegister=$userRegister;
 		
 		$this->aclTable=$aclTable; 
@@ -67,31 +66,36 @@ class AlbumController extends AbstractActionController   {
 		
 		$acl=$this->aclTable->getAcl ();
 		
-		$id=(new Container ('login'))->userLogin->id_user;
+		$auth=$this->container->get('auth');  
 		
-		$user=$this->userRegisterTable->getUser($id);  
+		if ($auth->hasIdentity () )  {
+			
+			$id= $auth->getIdentity()->id_user;
 		
-		$paginator = $this->table->fetchAll(true);  
+			$user=$this->userRegisterTable->getUser($id);  
 		
-		$page = $this->params()->fromRoute('page');
+			$paginator = $this->table->fetchAll(true);  
 		
-		$page=$page<0 ? 1 :$page;  
+			$page = $this->params()->fromRoute('page');
 		
-		$paginator->setCurrentPageNUmber ($page); 
+			$page=$page<0 ? 1 :$page;  
 		
-		$paginator ->setItemCountPerPage(2);   
+			$paginator->setCurrentPageNUmber ($page); 
+		
+			$paginator ->setItemCountPerPage(2);   
 		
 		
-		
-		return new ViewModel([
-            'albums' => $paginator,
-			'user'=>$user, 
+			
+			return new ViewModel([
+				'albums' => $paginator,
+				'user'=>$user, 
 
-			'acl'=>$acl, 
-			
-		//	'paginator'=>$paginator, 
-			
-        ]);
+				'acl'=>$acl, 
+				
+			//	'paginator'=>$paginator, 
+				
+			]);
+		}
 		
 		
     }

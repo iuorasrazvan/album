@@ -29,7 +29,7 @@ return [
                 'type'    => Literal::class,
                 'options' => [
                     // Change this to something specific to your module
-                    'route'    => '/',
+                    'route'    => '/login',
                     'defaults' => [
                         'controller'    => 'login',
                         'action'        => 'loginForm',
@@ -116,7 +116,7 @@ return [
 			
 				'type'=> Literal::class, 
 				'options'=> [
-					'route'=>'/login/register', 
+					'route'=>'/register', 
 					'defaults'=>[
 						'controller'=>'login', 
 						'action'=>'registerForm', 
@@ -136,7 +136,7 @@ return [
 			
 				'type'=> Literal::class, 
 				'options'=> [
-					'route'=>'/login/logout', 
+					'route'=>'/logout', 
 					'defaults'=>[
 						'controller'=>'login', 
 						'action'=>'logoutRoute', 

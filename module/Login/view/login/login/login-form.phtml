@@ -3,11 +3,13 @@ use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Role\GenericRole as Role; 
 use Zend\Permissions\Acl\Resource\GenericResource as Resource;   
 
-if (isset($this->message) && $this->message!=null)  {
 
-	echo '<h2>You have to be logged in to see the '.$this->message. '</h2>';  
+if (isset($this->message) ) {
+
+	echo '<h2>'.$this->message. '</h2>';  
 	
-}  
+}
+
 
 if (isset($this->error) ) {
 
@@ -15,105 +17,80 @@ if (isset($this->error) ) {
 	
 }
 
-if (isset($this->user) &&!empty ($this->user))  {
-	
+
+
+if (isset ($this->user))  { 
 	echo '<h2> welcome '.$this->escapeHtml($this->user->name).'</h2>';
+	
+	$logout = $this->url('logout-route'); 
+	
 
 ?>
-	<a href="<?= $this->url('album',['id_user'=>$this->user->id_user]);?>">Go to albums</a> or
-	<a href="<?= $this->url('driver');?>">Go to drivers</a>
-	
-	
-	<h4><a href="<?= $this->url('logout-route'); ?>">Logout</a></h4>
-	
-<?php 
-}
-
-else { 
-
-
-	$form=$this->form;
-
-
-	 
-	if (isset($form)) {
-		
-		$form->prepare();
-
-
-
-		$form->setAttribute('action', $this->url('login-form'));
-
-		// Set the method attribute for the form
-		$form->setAttribute('method', 'post');
-
-		// Get the form label plugin
-		$formLabel = $this->plugin('formLabel');
-
-		// Render the opening tag
-
-		echo $this->form()->openTag($form); 
-		?>  
-
-
-		<div class="form_element">
-		<?php 
-			$name=$form->get('username');  
-			echo $this->formRow($name);
-			
-		   // $name = $form->get('name');
-		//echo $formLabel->openTag() . $name->getOption('label');
-			//echo $this->formInput($name);
-			//echo $this->formElementErrors($name);
-			//echo $formLabel->closeTag();
-		?></div>
-
-
-
-		<div class="form_element">
-		<?php 
-			$password = $form->get('password');
-			echo $formLabel->openTag() . $password->getOption('label');
-			echo $this->formInput($password);
-			echo $this->formElementErrors($password);
-			echo $formLabel->closeTag();
-		?></div>
-
-
-
-		<?= $this->formElement($form->get('send')) ?>
-
-		<?= $this->form()->closeTag() ?>
-		
-		
-
-	<?php 
-
-			$register=$this->url('register-form'); 
-			echo '<h3>or';  
-	?>
-			<a href="<?php echo $register;?>">Register</a></h3> 
-
-
-	<?php 
-			
-			
-		}
-
-		else  { 
-
-		
-			$logout = $this->url('logout-route'); 
-		
-	?> 
-
 
 		<a href="<?php echo $logout;?>">Logout </a> 
+<?php
 		
-	<?php 
+}
 
-		}
-	}
+
+$form=$this->form;
+ 
+if (isset($form)) {
+	
+	$form->prepare();
+
+
+	$form->setAttribute('action', $this->url('login-form'));
+
+
+	// Set the method attribute for the form
+	$form->setAttribute('method', 'post');
+
+	// Get the form label plugin
+	$formLabel = $this->plugin('formLabel');
+
+	// Render the opening tag
+
+	echo $this->form()->openTag($form); 
+	?>  
+
+
+	<div class="form_element">
+	<?php 
+		$name=$form->get('username');  
+		echo $this->formRow($name);
+		
+	   // $name = $form->get('name');
+	//echo $formLabel->openTag() . $name->getOption('label');
+		//echo $this->formInput($name);
+		//echo $this->formElementErrors($name);
+		//echo $formLabel->closeTag();
+	?></div>
+
+
+
+	<div class="form_element">
+	<?php 
+		$password = $form->get('password');
+		echo $formLabel->openTag() . $password->getOption('label');
+		echo $this->formInput($password);
+		echo $this->formElementErrors($password);
+		echo $formLabel->closeTag();
+	?></div>
+
+
+
+	<?= $this->formElement($form->get('send')) ?>
+
+	<?= $this->form()->closeTag() ?>
+	
+		
+<?php
+	
+	
+}
+		
+
 	
 ?>  
 

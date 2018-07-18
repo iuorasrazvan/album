@@ -58,8 +58,9 @@
 			<?php  
 			
 				
-				echo $this->navigation('Zend\Navigation\Nav1')->breadcrumbs ();
-				echo $this->navigation()->menu ();  
+		
+				echo $this->navigation('Zend\Navigation\Nav1')->menu ();  
+				echo $this->navigation('Zend\Navigation\Nav2')->menu ();  
 				
 				$this->navigation()
 					  ->sitemap()

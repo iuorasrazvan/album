@@ -31,9 +31,14 @@ use Zend\Mvc\MvcEvent;
 
 use Login\Model\Navigation\View\MyHelper;  
 
+use Login\Model\Auth\AuthenticationListener;   
+
 
 class Module
+
 {
+	
+	
     public function getConfig()
     {
         return include __DIR__ . '/../config/module.config.php';
@@ -43,62 +48,24 @@ class Module
 		
 		$app=$e->getApplication();
 	
-		$eventManager=$app->getEventManager (); 
-		
-		$eventManager->attach ('route', [$this, 'onRoute']);  
-		
-		
-		
-	}
-	
-		
-	public function onRoute  (MvcEvent $e)   {
-		
-		$container= new Container('login');
-		
-		$userLogin=$container->userLogin;  
-		
-		$routeMatch = $e->getRouteMatch ();  
-		
-		$controller= $routeMatch->getParam ('controller');
-		
-		$routeName=$routeMatch -> getMatchedRouteName(); 
-		
-		switch ($routeName)  {
-			case 'album' : $message='albums';
-			
-			break;
-			
-			case 'driver': $message='drivers'; 
-			
-			break; 
-			
-			default:  $message=null;  
-			
-			
-		}
-		
-		
-	
-		
-	
-		if ($controller !='login')  {
-			
-		
-			if (!isset($userLogin))  {
-				
+		$eventManager=$app->getEventManager ();
 
-				$e->getResponse()->setStatusCode(301)->getHeaders()->addHeaders(['location' => '/?message='.$message]);
-				return $e->getResponse();
-				
-			
-			}  
-			
-		}
-			
+		$serviceManager=$app->getServiceManager ();  
+		
+		$auth=$serviceManager->get('auth'); 
+		
+		$eventManager->attach ('route', [ new AuthenticationListener($auth), 'onRoute']);  
+		
+		
 		
 	}
 	
+
+		
+	
+		
+
+		
 	
 	public function init (ModuleManager $moduleManager)  {
 		
@@ -168,23 +135,20 @@ class Module
 			
 				
 				Module::class=>InvokableFactory::class, 
-				Model\Auth\AuthService::class=>Model\Auth\AuthServiceFactory::class, 
-				Model\Auth\AuthService::class=>InvokableFactory::class, 
+				\Zend\Authentication\AuthenticationService::class=>Model\Auth\AuthServiceFactory::class, 
 				
+				\Model\Auth\AuthenticationListener::class=> ReflectionBasedAbstractFactory::class,
+			
 				
 				
 			],
 			
-			'services'=>[
-				
-				
-			
-			], 
+		
 			
 			'aliases'=>[
 				 'userRegister'=>Model\User\UserRegister::class, 
 				 'userRegisterTable'=>Model\User\UserRegisterTable::class, 
-				 'auth'=>Model\Auth\AuthService::class, 
+				 'auth'=>\Zend\Authentication\AuthenticationService::class, 
 			
 			]
 			

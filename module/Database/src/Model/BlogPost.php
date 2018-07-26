@@ -1,52 +1,61 @@
 <?php 
 
-namespace Database\Model;   
-
-use Zend\Permissions\Acl\ProprietaryInterface;
-use Zend\Permissions\Acl\Resource\ResourceInterface;  
+namespace Database\Model;    
 
 
-class BlogPost implements ResourceInterface  {
+class BlogPost  {
 	
-	public $author=null;  
+	public $user;  
 	
-	protected $age; 
+	public $age; 
 	
-	protected $weight;   
+	public $weight;   	
 	
+	public $id;
 	
-	
-	
-	public function __construct ($data)   {
+	public function setId ($id)  {
 		
-		foreach ($data as $key=>$value)  {
-			
-			$this->$key=$value;  
-		}
+		$this->id=$id;
 	}
+	
+	public function getId ()  {
+		
+		return $this->id;  
+	}
+	
+	public function setUser  ($user)  {
+		
+		$this->user= $user;  
+	}
+	
+	public function getUser ()  {
+		
+		return $this->user;
+	}
+	
+	
+	
+	
+	public function setAge ($age)  {
+		$this->age= $age;    
+		
+		
+	}
+	
+	public function getAge ()  {
+		return $this->age;  
+	}
+	
+	public function setWeight ($weight)  {
+		
+		$this->weight= $weight;  
+	}
+	
 	
 	public function getWeight ()  {
 		
-		return $this->weight; 
+		return $this->weight;   
 	}
-	
-	
-	
-	
-	public function getResourceId ()  {
-		return 'BlogPost';  
-		
-		
-	}
-	
-	public function getUsername ()  {
-		
-		if (isset($this->author->username))  {
-			
-			return true;  
-		}
-	}
-	
 	
 	
 	

@@ -42,8 +42,6 @@ class Module implements ConfigProviderInterface
 		$app =$e->getApplication ();
 		$eventManager=$app->getEventManager ();
 		
-	
-		
 		
 		
 	

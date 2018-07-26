@@ -3,6 +3,12 @@ use Zend\Permissions\Acl\Acl;
 use Zend\Permissions\Acl\Role\GenericRole as Role; 
 use Zend\Permissions\Acl\Resource\GenericResource as Resource;   
 
+if ($userr = $this->identity())  {
+	echo '<h2> Welcome '.$userr->name. '</h2>';  
+	
+	
+}
+
 
 if (isset($this->message) ) {
 

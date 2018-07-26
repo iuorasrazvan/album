@@ -2,6 +2,7 @@
 
 use Zend\Paginator\Paginator;
 use Zend\View\Helper\PaginationControl;
+use Zend\View\Renderer\PhpRenderer;  
 
 $title = 'My albums';
 
@@ -12,7 +13,9 @@ $user=$this->user;
 
 $acl= $this->acl; 
 
+
 isset ($this->paginator) ? $albums=$this->paginator : $albums=$this->albums;  
+ 
 
 
 ?>
@@ -25,7 +28,7 @@ isset ($this->paginator) ? $albums=$this->paginator : $albums=$this->albums;
 
 
 <p>
-    <a href="<?= $this->url('album', ['action' => 'add']) ?>">Add new album</a>
+    <a href="<?= $this->url('album', ['action' => 'add','page']) ?>">Add new album</a>
 </p>
 
 <table class="table">
@@ -78,18 +81,16 @@ isset ($this->paginator) ? $albums=$this->paginator : $albums=$this->albums;
 
 <?php 
 
-
-
-	echo $this->paginationControl (
-		$albums, 
-		'Sliding', 
-		'partials/paginator',
-		[
-			'route'=>'album-page', 
-		
-		]
+ 
+echo $this->paginationControl (
+	$albums, 
+	'Sliding', 
+	'partials/paginator',
+	[
+		'route'=>'album-page', 
 	
-	);
-	
+	]
+
+);
 	
 	

@@ -72,34 +72,17 @@ class Module  {
 		
 		$moduleRouteListener->attach ($eventManager);
 
-		$this -> bootstrapSession ($e);  
+		$this -> bootstrapSession ($e); 
+
+		
+		
+		
 		
 	   
 
 		
 	}	
 	
-	public function getViewHelperConfig () {
-		
-		return [ 
-		  'aliases' => [
-                'lowercase' => Lowercase::class,
-              
-            ],
-            'factories' => [
-                Lowercase::class => InvokableFactory::class,
-			],
-			
-		];  
-		
-		
-		
-	}
-	
-	
-
-	
-
 	
 	
 	

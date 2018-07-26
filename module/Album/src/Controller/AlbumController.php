@@ -92,7 +92,7 @@ class AlbumController extends AbstractActionController   {
 
 				'acl'=>$acl, 
 				
-			//	'paginator'=>$paginator, 
+				'page_no'=>$page, 
 				
 			]);
 		}
@@ -118,6 +118,8 @@ class AlbumController extends AbstractActionController   {
 
 		$album = new Album();
 		
+		$page=$this->params()->fromRoute('page');  
+		
 	   
 		
 		$form->bind ($album);  
@@ -131,32 +133,34 @@ class AlbumController extends AbstractActionController   {
             return ['form' => $form];
         }
 		
-		$id_user =(new Container ('login'))->userLogin->id_user;
+		$auth=$this->container->get ('auth');  
 		
-		$user= $this->userRegisterTable->getUser($id_user); 	
+		if ($auth->hasIdentity () )  {
+			
+			$id_user= $auth->getIdentity()->id_user;
 		
-	    $album->user=$user; 
+	
+		
+			$user= $this->userRegisterTable->getUser($id_user); 	
+		
+			$album->user=$user; 
 		
 		
-        $this->table->saveAlbum($album); 
+			$this->table->saveAlbum($album); 
 		 
-	
 		
-	 	$acl=$this->aclTable->getAcl (); 
+			$acl=$this->aclTable->getAcl (); 
 		
-
 		
-		$acl->allow ( 'guest', 'album', 'delete', new OwnershipAssertion());  
+			$acl->allow ( 'guest', 'album', 'delete', new OwnershipAssertion());  
 		
-		$this->aclTable->updateAcl ($acl); 
+			$this->aclTable->updateAcl ($acl); 
+			
+		}
 				
-		 
-				
-		
-	
 	
 		
-        return $this->redirect()->toRoute('album');
+        return $this->redirect()->toRoute('album-page');
 		
 	
       

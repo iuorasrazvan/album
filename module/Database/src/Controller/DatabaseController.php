@@ -1,6 +1,7 @@
 <?php 
 
 namespace Database\Controller;  
+/**  database **/  
 
 use Zend\Mvc\Controller\AbstractActionController;  
 use Zend\Db\Adapter\Adapter;  
@@ -21,8 +22,6 @@ use Zend\Db\Sql\Where;
 Use Zend\Db\Sql\Predicate\Predicate; 
 
 
-use Database\Model\Shoe;  
-
 use Zend\Db\Sql\Ddl;  
 
 use Zend\Db\TableGateway\TableGateway;  
@@ -35,28 +34,55 @@ use Zend\Db\TableGateway\Feature\MetadataFeature;
 
 use Zend\Db\TableGateway\Feature\RowGatewayFeature; 
 
-use Zend\Session\Config\StandardConfig;   
+/** database end **/  
 
-use Zend\Session\SessionManager;  
-use Zend\Session\Container ; 
-
-use Database\Model\Writer;
-
-use Database\Model\BlogPost;  
-
-use Zend\Permissions\Rbac\Role;  
-
-use Zend\Permissions\Rbac\Rbac;   
-
-use Database\Model\Article;  
-
-use Database\Model\User;  
 
 use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Resolver\AggregateResolver; 
 use Zend\View\Resolver\TemplateMapResolver;  
 use Zend\View\Resolver\RelativeFallbackResolver;  
 
+/** hydrators **/ 
+
+use Zend\Hydrator;  
+use Zend\Hydrator\Filter\MethodMatchFilter; 
+use Zend\Hydrator\Filter\FilterComposite;  
+use Zend\Hydrator\Filter;   
+use Zend\Hydrator\Aggregate\AggregateHydrator;  
+ 
+
+use Zend\Hydrator\Aggregate\ExtractEvent;
+
+use Zend\Hydrator\NamingStrategy\CompositeNamingStrategy ;  
+
+use Zend\Hydrator\NamingStrategy\MapNamingStrategy;  
+
+use Zend\Hydrator\NamingStrategy\UnderscoreNamingStrategy; 
+
+use Zend\Hydrator\AbstarctHydrator;    
+
+use Zend\Hydrator\Filter\FilterProviderInterface;  
+
+use Zend\Hydrator\NamingStrategy\IdentityNamingStrategy;  
+
+
+use Zend\Cache\Storage\Adapter\Memory;
+
+
+/** hydrators end **/  
+
+
+/** model **/ 
+
+use Database\Model\User;  
+use Database\Model\BlogPost; 
+use Database\Model\Hydrators\UserHydrator;  
+use Database\Model\Hydrators\AgeHydrator;  
+use Database\Model\Hydrators\WeightHydrator;
+
+/** model end **/ 
+
+ 
 
 
 class DatabaseController extends AbstractActionController    {
@@ -71,27 +97,53 @@ class DatabaseController extends AbstractActionController    {
 	}
 	
 	
-	
-	
 	public function routeAction ()  {
 		
-		$hydrator = new \Zend\Hydrator\ClassMethods();
-
-		$a = new A();
-		
-		$a->b=44; 
-
-
 	
-
-
-		$data=$hydrator->extract ($a);  
+	
+		$hydrator =new Hydrator\Reflection ();  
+		
+		$map = new MapNamingStrategy ([
+			'genre'=>'type', 
+			'kilos'=>'weight',   
+			
+			
+		
+		]);
+		
+		$underscore=new UnderscoreNamingStrategy ();  
+		
+		$composite = new CompositeNamingStrategy ([
+			'type'=>$map,
+			'weight'=>$map,
+			'genre'=>$map, 
+			'kilos'=>$map, 
+			'firstName'=>$underscore, 
+			'first_name'=>$underscore, 
+		
+		]);  
+		
+		$hydrator->setNamingStrategy ($composite);
+		
+		$data=['genre'=>'horse', 'kilos'=>44, 'first_name'=>'karina'];  
+	
+		
+		$animal =new Animal ();  
+		
+		
+		$hydrator ->hydrate ($data, $animal);  
+		print_r ($animal);  
+	
+		
+		$data= $hydrator ->extract ( $animal);  
 		
 		print_r ($data);  
+
 	
-			
-	}
+	} 
 	
+	
+
 	public function route1Action ()  {
 		
 		
@@ -118,30 +170,146 @@ class DatabaseController extends AbstractActionController    {
 	
 }
 
+class Animal  
+{
+    public $type='pork';
+	
 
-class A   {
-	public $a, $b;  
+	public $firstName='gogo';  
 	
-	public function setA  ($a)  {
+	public $weight;  
+	
+
+  
+	
+	
+	
+	public function getType () {
 		
-		$this->a=$a;  
+		if (!empty( $this->type))  {
+			return $this->type;  
+		}  
+		
+		return false;  
+	}
+	public function hasType ($a) {
+		
+		if (!empty ($this->type)) {
+			return true;
+		}
+		
+		return false;  
 	}
 	
-	public function getA ()  {
+	public function isType () {
 		
-		return $this->a;   
+		if (!empty ($this->type))  {
+			return true;
+		}
+		
+		return false;  
 	}
 	
-	public function setB  ($b)  {
 		
-		$this->b=$b;  
+	
+		
+	public function getWeight () {
+		
+		return 33;   
+	
+	
 	}
 	
-	public function getB ()  {
+	public function mesajPsd () {
 		
-		return $this->b;   
+		return  'muie psd';  
 	}
+	
+	public function showPedigree ()  {
+		
+		return $this->pedigree;  
+	}
+		
+		
+	
+	
+	
 }
 
+
+Class Artist   { 
+
+	 public $pisi;
+
+	 public $cutu;  
+
+	 public $foo='foo';  
+
+     public function getFoo()
+     {
+         return $this->foo;  
+     }
+	 
+	 public function setFoo ($foo) {
+		 
+		 $this->foo= $foo;  
+	 }
+
+	 public function getCutu ()  {
+		 
+		 return $this->cutu;
+	 }
+	 
+	 public function getPisi ()  {
+		 
+		 return $this->pisi;  
+	 }
+	 
+	 public function setCutu($cutu)  {
+		 
+		 $this->cutu=$cutu;  
+	 }
+	 
+	 public function setPisi ($pisi)  {
+		 
+		 $this->pisi=$pisi;  
+	 }
+    
+
+     public function getServiceManager()
+     {
+         return 'servicemanager';
+     }
+
+     public function getEventManager()
+     {
+         return 'eventmanager';
+     }
+
+     public function getFilter()
+     {
+         $compositeE = new FilterComposite();
+		 
+		 
+         $compositeE->addFilter (
+		 
+			'f1', new MethodMatchFilter ('getServiceManager') , FilterComposite::CONDITION_AND  
+		 
+		 
+		 
+		 );  
+		 
+		  
+         $compositeE->addFilter (
+		 
+			'f2', new MethodMatchFilter ('getEventManager') , FilterComposite::CONDITION_AND  
+		 
+		 
+		 
+		 );  
+
+         return $compositeE;
+     }
+}
 
 

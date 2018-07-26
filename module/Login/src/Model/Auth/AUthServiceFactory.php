@@ -8,6 +8,7 @@
 	
 	
 	
+	
 	class AuthServiceFactory  {
 		
 		public function __invoke  ( $container, $requestedName )  {
@@ -25,6 +26,13 @@
               'password',
                $callback
             );
+		
+
+		
+		
+		
+			
+			
             return new $requestedName (null, $dbAuthAdapter);
 			
 			

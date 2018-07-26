@@ -23,7 +23,7 @@ return [
 				'type'=>Segment::class, 
 				
 				'options'=>[ 
-					'route'=>'/database/:action', 
+					'route'=>'/database[/:action]', 
 					'defaults'=>[
 						'controller'=>'path', 
 						

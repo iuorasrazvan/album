@@ -81,6 +81,18 @@ return [
         ],
     ],
 	
+	'controller'=>[
+		'factories'=> [
+			Controller\AlbumTestCountroller::class=>function ($container, $requestedName) {
+				
+				return new $requestedName($container);  
+			}
+		
+		]
+	
+	
+	],  
+	
 	
 	
     'view_manager' => [

@@ -181,13 +181,13 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		
 			if ($this->auth->hasIdentity()) {
 				
-				$id_user=$this->auth->getIdentity ()->id_user;  
+			//	$id_user=$this->auth->getIdentity ()->id_user;  
 			
 				
-				$user=$this->userRegisterTable->getUser($id_user);  
+			//	$user=$this->userRegisterTable->getUser($id_user);  
+			return []; 
 			
-			
-				return ['user'=>$user];  
+			//	return ['user'=>$user];  
 			                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                	
 						
 			}
@@ -242,7 +242,7 @@ class LoginController extends AbstractActionController  implements InjectApplica
 				}
 				
 				else {
-					return ['form'=>$loginForm, 'message'=>'neconform credentials'];  
+					return ['form'=>$loginForm, 'message'=>'Invalid credentials'];  
 					
 					
 				}
@@ -337,16 +337,14 @@ class LoginController extends AbstractActionController  implements InjectApplica
 		
 		$authAdapter->setCredential($password); 
 		
+		$random_bytes=$this->userRegisterTable->select_random_bytes($username);
 		
 		$select = $authAdapter->getDbSelect();
 		
-		$random_bytes=$this->userRegisterTable->select_random_bytes($username);
-		
 		$select->where ([
-			'password_salt'=>md5($password.$random_bytes)
+				'password_salt'=>md5($password.$random_bytes)
 		]);  
-		
-	
+			
 
 		$result = $this->auth->authenticate ();
 			
@@ -396,9 +394,9 @@ class LoginController extends AbstractActionController  implements InjectApplica
 	
 	public function logoutRouteAction ()  {
 		
-		$session=new SessionManager();
+		$this->auth->clearIdentity ();
 		
-		$session->destroy (); 
+	
 		
 		$this->redirect()->toRoute('login-form');  
 		
